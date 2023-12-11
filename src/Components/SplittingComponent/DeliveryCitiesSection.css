@@ -1,0 +1,71 @@
+ 
+
+   .delivery-cities {
+    padding-top: 30px;
+    background-color: black;
+    box-sizing: border-box;
+    display: flex;
+    justify-content: space-evenly;
+    align-items: flex-start;
+    gap: 10px;
+    padding-bottom: 30px;
+  }
+  
+  .category {
+    margin-top: 5px;
+    padding-left: 4px;
+    color: grey;
+    font-weight: 700;
+    font-size: 12px;
+  }
+  
+  .category-heading {
+    padding-bottom: 5px;
+    margin-top: 5px;
+    padding-left: 4px;
+    color: rgb(20, 175, 214);
+    font-weight: 700;
+    font-size: 17px;
+  }
+  
+  .city-list {
+    padding-top: 5px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    margin-top: 5px;
+  }
+  
+  .city {
+    position: relative;
+    bottom: 7px;
+    color: white;
+    font-size: 15px;
+    cursor: pointer;
+    padding: 1px;
+    font-weight: 500;
+    transition: all 0.1s ease-in;
+  }
+  
+  .city:hover {
+    transform: scale(1.02);
+    color: #fff;
+  }
+  
+  .foot-icon {
+    transition: all 0.3s ease-in;
+    cursor: pointer;
+  }
+  
+  .foot-icon:hover {
+    transform: scale(1.03);
+  }
+  
+  .hr-line {
+    border: 0.5px inset;
+    background-color: #ffffff;
+    color: #ffffff;
+    height: 0;
+    width: 800px;
+  }
+   

@@ -2,9 +2,10 @@ import React, { useState,useEffect } from 'react'
 import './Animation.css'
 
 export default function Animation() {
-    const [h11,seth11]=useState("Late Night at Office?")
+    const [h11,seth11]=useState("Som Palkar")
     const [i,seti]=useState(0)
-    var arr=["Hungry?","Movie marathon?","Unexpected guests?","Late Night at Office?","Cooking gone wrong?","Game Night?"]
+    var arr=[ "Som","Hungry?","Movie marathon?","Unexpected guests?","Late Night at Office?","Cooking gone wrong?","Game Night?"]
+
     useEffect(() => {
         const interval = setInterval(() => {
             seti((i+1)%6);
@@ -16,7 +17,7 @@ export default function Animation() {
       useEffect(() => {
         const interval1 = setInterval(() => {
            seth11(arr[i]) ;
-        }, 3500);
+        }, 2000);
         return () => clearInterval(interval1);
       },[i] );
 

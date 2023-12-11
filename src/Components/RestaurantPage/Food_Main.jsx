@@ -8,11 +8,11 @@ import { data } from "../../restaurantData";
 import Discount from "../Assets/discount.svg";
 import CloseIcon from "@mui/icons-material/Close";
 import { Drawer, Box } from "@mui/material";
-import { Navbar } from "./Navbar";
 import ScrollToTop from "react-scroll-to-top";
 import { useWindowScroll } from "react-use";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { PreLoader } from "../PreLoader";
+import { Navbar } from "./Navbar";
 const Img = styled.img`
   cursor: pointer;
   display: block;
@@ -32,6 +32,7 @@ const Wrapper = styled.header`
   margin-top: 90px;
   background: #171a29;
 `;
+
 const settings = {
   dots: false,
   infinite: false,
@@ -41,9 +42,9 @@ const settings = {
   lazyLoading: "progressive",
   useCSS: true,
 };
+
 function Food_Main() {
   const navigate = useNavigate();
-  // Preloader Fake Promise
   const [loading, isLoading] = useState(true);
 
   useEffect(() => {
@@ -52,17 +53,30 @@ function Food_Main() {
     }, 3000);
   }, []);
 
-  
-  const handleClick = (id) => {
-    localStorage.setItem("foodId", JSON.stringify(data[+id]));
-    navigate(`/food/${id}`);
-  };
+  // const handleClick = (id) => {
+  //   localStorage.setItem("foodId", JSON.stringify(data[+id]));
+  //   navigate(`/food/${id}`);
+  // };
 
   const [foodItems, setfoodItems] = useState([]);
   const [isDraweropen, setisDraweropen] = useState(false);
 
   useEffect(() => {
-    setfoodItems(data);
+    const fetchData = async () => {
+      try {
+        const response = await fetch("http://localhost:4000/restaurant/");
+        const fetchedData = await response.json();
+
+        console.log(fetchedData[0]);
+        setfoodItems(fetchedData);
+        // isLoading(false); // Stop loading after data is fetched
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        // isLoading(false); // Stop loading in case of an error
+      }
+    };
+
+    fetchData();
   }, []);
 
   const { x, y } = useWindowScroll();
@@ -133,6 +147,7 @@ function Food_Main() {
     setfoodItems(array);
     setisDraweropen(false);
   };
+
   return loading ? (
     <PreLoader />
   ) : (
@@ -579,21 +594,27 @@ function Food_Main() {
       <div className="container_card">
         {foodItems.map((food_data) => (
           <>
+          {/* onClick={() => handleClick(food_data.id)} */}
+            {/* {console.log(food_data._id)} */}
             <div
               className="food_card"
               key={food_data.id}
-              onClick={() => handleClick(food_data.id)}
+              
             >
               {food_data.promoted && (
                 <div className="promoted" id="is_promote">
                   PROMOTED
                 </div>
               )}
-              <img
-                src={food_data.img_url}
-                alt="Food_Image"
-                className="food_image"
-              ></img>
+              {/* to={`/food/${}`} */}
+
+               <Link to={`/food/${food_data._id}`}>
+                <img
+                  src={food_data.img_url}
+                  alt="Food_Image"
+                  className="food_image"
+                ></img>
+               </Link>
               <h4 className="Header_card">{food_data.name}</h4>
               <p className="para_card">{food_data.cuisines.join(",")}</p>
               <div className="food_details">

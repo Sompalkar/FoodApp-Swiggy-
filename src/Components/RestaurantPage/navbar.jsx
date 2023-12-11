@@ -9,8 +9,22 @@ import User from "../Assets/user.png";
 import CloseIcon from "@mui/icons-material/Close";
 import { Drawer, Box } from "@mui/material";
 import { Link, useNavigate } from "react-router-dom";
-import "./Navbar.css";
-import Firebase from "../../Firebase";
+import "./navbar.css";
+// import {
+//   getAuth,
+//   RecaptchaVerifier,
+//   signInWithPhoneNumber,
+// } from "firebase/auth";
+
+// // Your Firebase configuration
+// const firebaseConfig = {
+//   // Your config here
+// };
+
+// // Initialize Firebase
+// const auth = getAuth();
+
+// export { auth, signInWithPhoneNumber, RecaptchaVerifier };
 
 export function Navbar() {
   const [isDraweropen, setisDraweropen] = useState(false);
@@ -22,155 +36,29 @@ export function Navbar() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [len, setLen] = useState(0);
-  const [verificationId, setVerificationId] = useState("");
-  const [otp, setOtp] = useState(false);
-  const [otp_valid, setOtp_valid] = useState("");
+  const [len, setLen] = useState(0); 
 
   const location = JSON.parse(localStorage.getItem("Location"));
   let cart = JSON.parse(localStorage.getItem("Cart")) || [];
   const navigate = useNavigate();
-  useEffect(() => {
-    let user = JSON.parse(localStorage.getItem("user_details"));
-    if (user.name !== "") {
-      setUser_details(user);
-      setUser_signin(true);
-      setsignIn(true);
-    }
-  }, []);
+  
 
   useEffect(() => {
     setLen(cart.length);
   }, [cart]);
 
-  useEffect(() => {
-    setOtp_valid(otp_valid);
-  }, [otp_valid]);
+  
 
-  useEffect(() => {
-    let user = JSON.parse(localStorage.getItem("user_details"));
-    let id = JSON.parse(localStorage.getItem("verificationId"));
-    if (user.name == "" || user.email == "" || user.number == "" || id.verificationId == "") {
-      let temp = {
-        name: name,
-        email: email,
-        number: number,
-      };
-      localStorage.setItem("user_details", JSON.stringify(temp));
-    }
-  }, [name, email, number]);
 
-  // Firebase OTP Authentication
-  function handleSubmit_Otp_sigin(e) {
-    e.preventDefault();
-    const code = otp_valid;
-    window.confirmationResult
-      .confirm(code)
-      .then((result) => {
-        const user = result.user;
-        setVerificationId(user.uid);
-        localStorage.setItem("verificationId", JSON.stringify(user.uid));
-        alert("Account created successfully");
-        window.location.reload(true);
-      })
-      .catch((error) => {
-        alert(error.message);
-      });
-    setOtp(false);
-    setisDraweropen(false);
 
-  }
 
-  function handleSubmit_Otp_login(e) {
-    e.preventDefault();
-    const code = otp_valid;
-    window.confirmationResult
-      .confirm(code)
-      .then((result) => {
-        const user = result.user;
-        let id = JSON.parse(localStorage.getItem("verificationId"));
-        if (id !== user.uid) {
-          alert(
-            "Verification failed ! To Place the Order account must be verified"
-          );
-        } else {
-          alert("User Verified Success!");
-        }
-      })
-      .catch((error) => {
-        alert(error.message);
-      });
-    setOtp(false);
-    setisDraweropen(false);
-  }
 
-  const configureCaptcha_signIn = () => {
-    window.recaptchaVerifier = new Firebase.auth.RecaptchaVerifier(
-      "sign-in-button",
-      {
-        size: "invisible",
-        callback: () => {
-          onSigninSubmit();
-          alert("Recaptcha verified");
-        },
-        defaultCountry: "IN",
-      }
-    );
-  };
-  const configureCaptcha_login = () => {
-    window.recaptchaVerifier = new Firebase.auth.RecaptchaVerifier(
-      "sign-in-button",
-      {
-        size: "invisible",
-        callback: () => {
-          onLogInSubmit();
-          alert("Recaptcha verified");
-        },
-        defaultCountry: "IN",
-      }
-    );
-  };
 
-  const onSigninSubmit = (e) => {
-    e.preventDefault();
-    let user = JSON.parse(localStorage.getItem("user_details"));
-    if (user.name !== "" || user.email !== "" || user.number !== "") {
-      configureCaptcha_signIn();
-      const phoneNumber = "+91" + number;
-      const appVerifier = window.recaptchaVerifier;
-      Firebase.auth()
-        .signInWithPhoneNumber(phoneNumber, appVerifier)
-        .then((confirmationResult) => {
-          window.confirmationResult = confirmationResult;
-          alert("OTP Sent Successfully !");
-        })
-        .catch((error) => {
-          alert(error.message);
-        });
-      setOtp(true);
-      setisDraweropen(true);
-    }
-  };
-  const onLogInSubmit = (e) => {
-    e.preventDefault();
-    let user = JSON.parse(localStorage.getItem("user_details"));
-    if (user.number !== "") {
-      configureCaptcha_login();
-      const phoneNumber = "+91" + number;
-      const appVerifier = window.recaptchaVerifier;
-      Firebase.auth()
-        .signInWithPhoneNumber(phoneNumber, appVerifier)
-        .then((confirmationResult) => {
-          window.confirmationResult = confirmationResult;
-          alert("OTP Sent Successfully !");
-        })
-        .catch((error) => {
-          alert(error.message);
-        });
-      setOtp(true);
-      setisDraweropen(true);
-    }
-  };
+
+
+
+
+
 
   return (
     <>
@@ -220,17 +108,14 @@ export function Navbar() {
                   className="Number_input"
                   autoFocus={true}
                   spellCheck="false"
-                  value={number}
-                  onChange={(e) => {
-                    setNumber(e.target.value);
-                  }}
+                  
                 />
                 <br />
                 <input
                   type="submit"
                   value="CONTINUE"
                   className="login_btn"
-                  onClick={onLogInSubmit}
+                   
                 />
               </form>
               <div className="foot_text">
@@ -271,10 +156,7 @@ export function Navbar() {
                   className="Number_input_1"
                   autoFocus={true}
                   spellCheck="false"
-                  value={number}
-                  onChange={(e) => {
-                    setNumber(e.target.value);
-                  }}
+                   
                 />
                 <br />
                 <input
@@ -293,10 +175,7 @@ export function Navbar() {
                   name="email"
                   placeholder="Email"
                   className="Number_input_1"
-                  value={email}
-                  onChange={(e) => {
-                    setEmail(e.target.value);
-                  }}
+                   
                 />
                 <br />
                 <input
@@ -304,10 +183,7 @@ export function Navbar() {
                   name="password"
                   placeholder="Password"
                   className="Number_input"
-                  value={password}
-                  onChange={(e) => {
-                    setPassword(e.target.value);
-                  }}
+                   
                 />
                 <br />
 
@@ -315,7 +191,7 @@ export function Navbar() {
                   type="submit"
                   value="CONTINUE"
                   className="login_btn"
-                  onClick={onSigninSubmit}
+                  
                 />
               </form>
 
@@ -330,7 +206,7 @@ export function Navbar() {
         </Box>
       </Drawer>
 
-      {otp ? (
+      (
         <Drawer
           anchor="right"
           open={isDraweropen}
@@ -355,20 +231,15 @@ export function Navbar() {
                   type="number"
                   name="Number"
                   placeholder="Enter the OTP"
-                  className="Number_input"
-                  value={otp_valid}
-                  onChange={(e) => {
-                    setOtp_valid(e.target.value);
-                  }}
+                  className="Number_input" 
+                   
                 />
                 <br />
                 <input
                   type="submit"
                   value="SUBMIT"
                   className="login_btn"
-                  onClick={
-                    login ? handleSubmit_Otp_login : handleSubmit_Otp_sigin
-                  }
+                   
                 />
               </form>
               <div className="foot_text">
@@ -382,7 +253,7 @@ export function Navbar() {
         </Drawer>
       ) : (
         ""
-      )}
+      )
 
       <nav className="navbar">
         <img src={Logo} alt="" className="logo" />

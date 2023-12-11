@@ -7,7 +7,11 @@ import "./LandingPage.css";
 import Animation from "./Animation";
 import { cities } from "../../data";
 import { useNavigate } from "react-router-dom";
-
+import {
+  getAuth,
+  RecaptchaVerifier,
+  signInWithPhoneNumber,
+} from "firebase/auth";
 import PopularCities from "./PopularCities.jsx";
 import LocationInput from "./LocationInput.jsx";
 import SocialFooter from "./SocialFooter.jsx";
@@ -15,7 +19,12 @@ import NewFooterComponent from "./NewFooterComponent.jsx";
 import CardSection from "../SplittingComponent/CardSection";
 import AppDownloadSection from "../SplittingComponent/AppDownloadSection";
 import DeliveryCitiesSection from "../SplittingComponent/DeliveryCitiesSection";
- 
+
+import app from "../../Firebase.js";
+
+const auth = getAuth(app); // Pass the app instance to getAuth
+
+export { auth, signInWithPhoneNumber, RecaptchaVerifier };
 
 export function LandingPage() {
   const [isDraweropen, setisDraweropen] = useState(false);
@@ -94,12 +103,132 @@ export function LandingPage() {
 
   localStorage.setItem("Location", JSON.stringify(query));
 
-  
+  useEffect(() => {
+    let id = JSON.parse(localStorage.getItem("verificationId"));
+    let user = JSON.parse(localStorage.getItem("user_details"));
+    if (
+      user.name == "" ||
+      user.email == "" ||
+      user.number == "" ||
+      id.verificationId == ""
+    ) {
+      let temp = {
+        name: name,
+        email: email,
+        number: number,
+      };
+      localStorage.setItem("user_details", JSON.stringify(temp));
+    }
+  }, [name, email, number]);
 
+  useEffect(() => {
+    setOtp_valid(otpvalid);
+  }, [otpvalid]);
 
+  function handleOtpSignIn(e) {
+    e.preventDefault();
+    const code = otpvalid;
 
+    window.confirmationResult
+      .confirm(code)
+      .then((result) => {
+        const user = result.user;
 
+        setVerificationId(user.uid);
 
+        localStorage.setItem("verificationId", JSON.stringify(user.uid));
+
+        alert("Account created successfully. Login now!");
+      })
+      .catch((error) => {
+        alert(error.message);
+      });
+
+    setOtp(false);
+
+    setisDraweropen(false);
+  }
+
+  function handleOtpLogin(e) {
+    e.preventDefault();
+    const code = otpvalid;
+    window.confirmationResult
+      .confirm(code)
+      .then((result) => {
+        const user = result.user;
+
+        let id = JSON.parse(localStorage.getItem("verificationId"));
+
+        if (id !== user.uid) {
+          navigate("/restaurants");
+        } else {
+          alert("User Verified Successfully!");
+          navigate("/restaurants");
+        }
+      })
+      .catch((error) => {
+        alert(error.message);
+      });
+    setOtp(false);
+    setisDraweropen(false);
+  }
+
+  const onSignInSubmit = async (e) => {
+    e.preventDefault();
+    let user = JSON.parse(localStorage.getItem("user_details"));
+
+    if (user.name !== "" || user.email !== "" || user.number !== "") {
+      const phoneNumber = "+91" + number;
+
+      console.log(number, name, email);
+
+      try {
+        const confirmationResult = await signInWithPhoneNumber(
+          auth,
+          phoneNumber,
+          getRecaptchaVerifier()
+        );
+        window.confirmationResult = confirmationResult;
+        alert("OTP Sent Successfully !");
+        setOtp(true);
+        setisDraweropen(true);
+      } catch (error) {
+        alert(error.message);
+      }
+    }
+  };
+
+  const onLoginSubmit = async (e) => {
+    e.preventDefault();
+    let user = JSON.parse(localStorage.getItem("user_details"));
+
+    if (user.number !== "") {
+      try {
+        const confirmationResult = await signInWithPhoneNumber(
+          auth,
+          "+91" + number,
+          getRecaptchaVerifier()
+        );
+        window.confirmationResult = confirmationResult;
+        alert("OTP Sent Successfully !");
+        setOtp(true);
+        setisDraweropen(true);
+      } catch (error) {
+        alert(error.message);
+      }
+    }
+  };
+
+  const getRecaptchaVerifier = () => {
+    return new RecaptchaVerifier("recaptcha-container", {
+      size: "invisible",
+      callback: (response) => {
+        console.log("Recaptcha verified");
+        // You can add additional logic here if needed
+      },
+      defaultCountry: "IN",
+    });
+  };
 
   return (
     <>
@@ -149,14 +278,17 @@ export function LandingPage() {
                   className="Number_input"
                   autoFocus={true}
                   spellCheck={false}
-                   
+                  value={number}
+                  onChange={(e) => {
+                    setNumber(e.target.value);
+                  }}
                 />
                 <br />
                 <input
                   type="submit"
                   value="CONTINUE"
                   className="login_btn"
-                  
+                  onClick={onLoginSubmit}
                 />
               </form>
               <div className="foot_text">
@@ -197,7 +329,10 @@ export function LandingPage() {
                   className="Number_input_1"
                   autoFocus={true}
                   spellCheck={false}
-                  
+                  value={number}
+                  onChange={(e) => {
+                    setNumber(e.target.value);
+                  }}
                 />
                 <br />
                 <input
@@ -205,7 +340,10 @@ export function LandingPage() {
                   name="user_name"
                   placeholder="Name"
                   className="Number_input_1"
-                  
+                  value={name}
+                  onChange={(e) => {
+                    setName(e.target.value);
+                  }}
                 />
                 <br />
                 <input
@@ -213,7 +351,10 @@ export function LandingPage() {
                   name="email"
                   placeholder="Email"
                   className="Number_input_1"
-                   
+                  value={email}
+                  onChange={(e) => {
+                    setEmail(e.target.value);
+                  }}
                 />
                 <br />
                 <input
@@ -221,7 +362,10 @@ export function LandingPage() {
                   name="password"
                   placeholder="Password"
                   className="Number_input"
-                   
+                  value={password}
+                  onChange={(e) => {
+                    setPassword(e.target.value);
+                  }}
                 />
                 <br />
 
@@ -229,7 +373,7 @@ export function LandingPage() {
                   type="submit"
                   value="CONTINUE"
                   className="login_btn"
-                   
+                  onClick={onSignInSubmit}
                 />
               </form>
 
@@ -244,7 +388,58 @@ export function LandingPage() {
         </Box>
       </Drawer>
 
-      
+      {otp ? (
+        <Drawer
+          anchor="right"
+          open={isDraweropen}
+          onClose={() => {
+            setisDraweropen(false);
+          }}
+        >
+          <Box role="presentation" p={4} width="500px">
+            <CloseIcon
+              className="close_icon"
+              onClick={() => {
+                setisDraweropen(false);
+              }}
+              style={{ cursor: "pointer" }}
+            />
+            <div className="login_form">
+              <div className="left_div">
+                <h2>Enter OTP</h2>
+              </div>
+              <form>
+                <input
+                  type="number"
+                  name="Number"
+                  autoFocus={true}
+                  placeholder="Enter the OTP"
+                  className="Number_input"
+                  value={otpvalid}
+                  onChange={(e) => {
+                    setOtp_valid(e.target.value);
+                  }}
+                />
+                <br />
+                <input
+                  type="submit"
+                  value="SUBMIT"
+                  className="login_btn"
+                  onClick={login ? handleOtpLogin : handleOtpSignIn}
+                />
+              </form>
+              <div className="foot_text">
+                <p>
+                  By clicking on Login, I accept the terms & Conditions &
+                  Privacy Policy
+                </p>
+              </div>
+            </div>
+          </Box>
+        </Drawer>
+      ) : (
+        ""
+      )}
 
       <div
         className="split"

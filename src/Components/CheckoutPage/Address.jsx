@@ -4,9 +4,12 @@ import { Drawer, Box } from "@mui/material";
 import Button from "@mui/material/Button";
 import "./Address.css";
 import "mapbox-gl/dist/mapbox-gl.css";
+ 
 import { useNavigate } from "react-router-dom";
 import Logo from "../Assets/swiggy.svg";
-import Firebase from "../../Firebase";
+
+ 
+
 let data = ["1234 5678 1764 5678", "Biswaranjan Subudhi", "10/25", "123"];
 
 function loadScript(src) {
@@ -78,9 +81,9 @@ export const Address = () => {
         alert("Payment request was successfull !!");
       },
       prefill: {
-        name: "Biswaranjan Subudhi",
-        email: "biswaranjan.cuh@gmail.com",
-        phone_number: "9090538595",
+        name: "Som Palkar",
+        email: "palkarsom1@gmail.com",
+        phone_number: "8265047578",
       },
     };
     const paymentObject = new window.Razorpay(options);
@@ -162,281 +165,11 @@ export const Address = () => {
     }
   }, [name, email, number]);
 
-  // Firebase OTP Authentication
-  function handleSubmit_Otp_sigin(e) {
-    e.preventDefault();
-    const code = otp_valid;
-    window.confirmationResult
-      .confirm(code)
-      .then((result) => {
-        const user = result.user;
-        setVerificationId(user.uid);
-        localStorage.setItem("verificationId", JSON.stringify(user.uid));
-        alert("Account created successfully");
-        window.location.reload(true);
-      })
-      .catch((error) => {
-        alert(error.message);
-      });
-    setOtp(false);
-    setisDraweropen_login(false);
-  }
-
-  function handleSubmit_Otp_login(e) {
-    e.preventDefault();
-    const code = otp_valid;
-    window.confirmationResult
-      .confirm(code)
-      .then((result) => {
-        const user = result.user;
-        let id = JSON.parse(localStorage.getItem("verificationId"));
-        if (id !== user.uid) {
-          alert(
-            "Verification failed ! To Place the Order account must be verified"
-          );
-        } else {
-          alert("User Verified Success!");
-          window.location.reload(true);
-        }
-      })
-      .catch((error) => {
-        alert(error.message);
-      });
-    setOtp(false);
-    setisDraweropen_login(false);
-  }
-
-  const configureCaptcha_signIn = () => {
-    window.recaptchaVerifier = new Firebase.auth.RecaptchaVerifier(
-      "sign-in-button",
-      {
-        size: "invisible",
-        callback: () => {
-          onSigninSubmit();
-          alert("Recaptcha verified");
-
-        },
-        defaultCountry: "IN",
-      }
-    );
-  };
-
-  const configureCaptcha_login = () => {
-    window.recaptchaVerifier = new Firebase.auth.RecaptchaVerifier(
-      "sign-in-button",
-      {
-        size: "invisible",
-        callback: () => {
-          onLogInSubmit();
-          alert("Recaptcha verified");
-
-        },
-        defaultCountry: "IN",
-      }
-    );
-  };
-
-  const onSigninSubmit = (e) => {
-    e.preventDefault();
-    let user = JSON.parse(localStorage.getItem("user_details"));
-    if (user.name !== "" || user.email !== "" || user.number !== "") {
-      configureCaptcha_signIn();
-      const phoneNumber = "+91" + number;
-      const appVerifier = window.recaptchaVerifier;
-      Firebase.auth()
-        .signInWithPhoneNumber(phoneNumber, appVerifier)
-        .then((confirmationResult) => {
-          window.confirmationResult = confirmationResult;
-          alert("OTP Sent Successfully !");
-        })
-        .catch((error) => {
-          alert(error.message);
-        });
-      setOtp(true);
-      setisDraweropen_login(true);
-    }
-  };
-
-  const onLogInSubmit = (e) => {
-    e.preventDefault();
-    let user = JSON.parse(localStorage.getItem("user_details"));
-    if (user.number !== "") {
-      configureCaptcha_login();
-      const phoneNumber = "+91" + number;
-      const appVerifier = window.recaptchaVerifier;
-      Firebase.auth()
-        .signInWithPhoneNumber(phoneNumber, appVerifier)
-        .then((confirmationResult) => {
-          window.confirmationResult = confirmationResult;
-          alert("OTP Sent Successfully !");
-        })
-        .catch((error) => {
-          alert(error.message);
-        });
-      setOtp(true);
-      setisDraweropen_login(true);
-    }
-  };
+ 
 
   return (
     <>
-      <Drawer
-        anchor="right"
-        open={isDraweropen_login}
-        onClose={() => {
-          setisDraweropen_login(false);
-        }}
-      >
-        <Box role="presentation" p={4} width="500px">
-          <CloseIcon
-            className="close_icon"
-            onClick={() => {
-              setisDraweropen_login(false);
-            }}
-            style={{ cursor: "pointer" }}
-          />
-          {login ? (
-            <div className="login_form">
-              <div className="left_div">
-                <h2>Login</h2>
-                <p className="link_register">
-                  or{" "}
-                  <a
-                    onClick={() => setLogin(false)}
-                    style={{ cursor: "pointer" }}
-                  >
-                    create an account
-                  </a>
-                </p>
-              </div>
-              <hr className="hr_line_drawer" />
-              <div className="right_div">
-                <img
-                  src="https://res.cloudinary.com/swiggy/image/upload/fl_lossy,f_auto,q_auto/Image-login_btpq7r"
-                  alt=""
-                  className="food_wrap"
-                />
-              </div>
-              <form>
-                <div id="sign-in-button"></div>
-                <input
-                  type="number"
-                  name="Number"
-                  placeholder="Phone Number"
-                  className="Number_input"
-                  autoFocus={true}
-                  spellCheck="false"
-                  value={number}
-                  onChange={(e) => {
-                    setNumber(e.target.value);
-                  }}
-                />
-                <br />
-                <input
-                  type="submit"
-                  value="CONTINUE"
-                  className="login_btn"
-                  onClick={onLogInSubmit}
-                />
-              </form>
-              <div className="foot_text">
-                <p>
-                  By clicking on Login, I accept the terms & Conditions &
-                  Privacy Policy
-                </p>
-              </div>
-            </div>
-          ) : (
-            <div className="login_form">
-              <div className="left_div">
-                <h2>Sign up</h2>
-                <p className="link_register">
-                  or{" "}
-                  <a
-                    style={{ cursor: "pointer" }}
-                    onClick={() => setLogin(true)}
-                  >
-                    login to your account
-                  </a>
-                </p>
-              </div>
-              <hr className="hr_line_drawer" />
-              <div className="right_div">
-                <img
-                  src="https://res.cloudinary.com/swiggy/image/upload/fl_lossy,f_auto,q_auto/Image-login_btpq7r"
-                  alt=""
-                  className="food_wrap"
-                />
-              </div>
-              <form>
-                <div id="sign-in-button"></div>
-                <input
-                  type="number"
-                  name="Number"
-                  placeholder="Phone Number"
-                  className="Number_input_1"
-                  autoFocus={true}
-                  spellCheck="false"
-                  value={number}
-                  onChange={(e) => {
-                    setNumber(e.target.value);
-                  }}
-                />
-                <br />
-                <input
-                  type="text"
-                  name="user_name"
-                  placeholder="Name"
-                  className="Number_input_1"
-                  value={name}
-                  onChange={(e) => {
-                    setName(e.target.value);
-                  }}
-                />
-                <br />
-                <input
-                  type="text"
-                  name="email"
-                  placeholder="Email"
-                  className="Number_input_1"
-                  value={email}
-                  onChange={(e) => {
-                    setEmail(e.target.value);
-                  }}
-                />
-                <br />
-                <input
-                  type="password"
-                  name="password"
-                  placeholder="Password"
-                  className="Number_input"
-                  value={password}
-                  onChange={(e) => {
-                    setPassword(e.target.value);
-                  }}
-                />
-                <br />
-
-                <input
-                  type="submit"
-                  value="CONTINUE"
-                  className="login_btn"
-                  onClick={onSigninSubmit}
-                />
-              </form>
-
-              <div className="foot_text">
-                <p>
-                  By clicking on Login, I accept the terms & Conditions &
-                  Privacy Policy
-                </p>
-              </div>
-            </div>
-          )}
-        </Box>
-      </Drawer>
-
-      {otp ? (
+      <>
         <Drawer
           anchor="right"
           open={isDraweropen_login}
@@ -452,264 +185,434 @@ export const Address = () => {
               }}
               style={{ cursor: "pointer" }}
             />
-            <div className="login_form">
-              <div className="left_div">
-                <h2>Enter OTP</h2>
+            {login ? (
+              <div className="login_form">
+                <div className="left_div">
+                  <h2>Login</h2>
+                  <p className="link_register">
+                    or{" "}
+                    <a
+                      onClick={() => setLogin(false)}
+                      style={{ cursor: "pointer" }}
+                    >
+                      create an account
+                    </a>
+                  </p>
+                </div>
+                <hr className="hr_line_drawer" />
+                <div className="right_div">
+                  <img
+                    src="https://res.cloudinary.com/swiggy/image/upload/fl_lossy,f_auto,q_auto/Image-login_btpq7r"
+                    alt=""
+                    className="food_wrap"
+                  />
+                </div>
+                <form>
+                  <div id="sign-in-button"></div>
+                  <input
+                    type="number"
+                    name="Number"
+                    placeholder="Phone Number"
+                    className="Number_input"
+                    autoFocus={true}
+                    spellCheck="false"
+                    value={number}
+                    onChange={(e) => {
+                      setNumber(e.target.value);
+                    }}
+                  />
+                  <br />
+                  <input
+                    type="submit"
+                    value="CONTINUE"
+                    className="login_btn"
+                     
+                  />
+                </form>
+                <div className="foot_text">
+                  <p>
+                    By clicking on Login, I accept the terms & Conditions &
+                    Privacy Policy
+                  </p>
+                </div>
               </div>
-              <form>
-                <input
-                  type="number"
-                  name="Number"
-                  placeholder="Enter the OTP"
-                  className="Number_input"
-                  value={otp_valid}
-                  onChange={(e) => {
-                    setOtp_valid(e.target.value);
-                  }}
-                />
-                <br />
-                <input
-                  type="submit"
-                  value="SUBMIT"
-                  className="login_btn"
-                  onClick={
-                    login ? handleSubmit_Otp_login : handleSubmit_Otp_sigin
-                  }
-                />
-              </form>
-              <div className="foot_text">
-                <p>
-                  By clicking on Login, I accept the terms & Conditions &
-                  Privacy Policy
-                </p>
+            ) : (
+              <div className="login_form">
+                <div className="left_div">
+                  <h2>Sign up</h2>
+                  <p className="link_register">
+                    or{" "}
+                    <a
+                      style={{ cursor: "pointer" }}
+                      onClick={() => setLogin(true)}
+                    >
+                      login to your account
+                    </a>
+                  </p>
+                </div>
+                <hr className="hr_line_drawer" />
+                <div className="right_div">
+                  <img
+                    src="https://res.cloudinary.com/swiggy/image/upload/fl_lossy,f_auto,q_auto/Image-login_btpq7r"
+                    alt=""
+                    className="food_wrap"
+                  />
+                </div>
+                <form>
+                  <div id="sign-in-button"></div>
+                  <input
+                    type="number"
+                    name="Number"
+                    placeholder="Phone Number"
+                    className="Number_input_1"
+                    autoFocus={true}
+                    spellCheck="false"
+                    value={number}
+                    onChange={(e) => {
+                      setNumber(e.target.value);
+                    }}
+                  />
+                  <br />
+                  <input
+                    type="text"
+                    name="user_name"
+                    placeholder="Name"
+                    className="Number_input_1"
+                    value={name}
+                    onChange={(e) => {
+                      setName(e.target.value);
+                    }}
+                  />
+                  <br />
+                  <input
+                    type="text"
+                    name="email"
+                    placeholder="Email"
+                    className="Number_input_1"
+                    value={email}
+                    onChange={(e) => {
+                      setEmail(e.target.value);
+                    }}
+                  />
+                  <br />
+                  <input
+                    type="password"
+                    name="password"
+                    placeholder="Password"
+                    className="Number_input"
+                    value={password}
+                    onChange={(e) => {
+                      setPassword(e.target.value);
+                    }}
+                  />
+                  <br />
+
+                  <input
+                    type="submit"
+                    value="CONTINUE"
+                    className="login_btn"
+                    
+                  />
+                </form>
+
+                <div className="foot_text">
+                  <p>
+                    By clicking on Login, I accept the terms & Conditions &
+                    Privacy Policy
+                  </p>
+                </div>
               </div>
-            </div>
+            )}
           </Box>
         </Drawer>
-      ) : (
-        ""
-      )}
 
-      <div className="main_div_user">
-        {isLogin_user ? (
-          <div className="login_div">
-            Login / Register <br />
-            <Button
-              className="btn_address"
-              variant="contained"
-              onClick={() => {
-                setLogin(true);
-                setisDraweropen_login(true);
-              }}
-            >
-              LOGIN / REGISTER
-            </Button>
-          </div>
-        ) : (
-          ""
-        )}
-
-        <Drawer
-          anchor="left"
-          open={isDraweropen}
-          onclose={() => {
-            setisDraweropen(false);
-          }}
-        >
-          <Box role="presentation" p={4} width="400px" className="address_box">
-            <CloseIcon
-              onClick={() => {
-                setisDraweropen(false);
-              }}
-              style={{ cursor: "pointer", position: "absolute", right: "30px" }}
-              className="close_address"
-            />
-            <iframe
-              width="400px"
-              height="400px"
-              src={`https://api.mapbox.com/styles/v1/nifty658/cl2tg7el3002l14pelopffxie.html?title=false&access_token=pk.eyJ1IjoibmlmdHk2NTgiLCJhIjoiY2wydDB2eW8wMDQ2bTNrazQybHdpaGd1MyJ9.Zu_154GZs6sdRHr1Og6V8g&zoomwheel=true#10/${location.latitude}/${location.longitude}`}
-              title="Streets"
-              style={{ border: "none", marginTop: "50px", borderRadius: "7px" }}
-            ></iframe>
-
-            <div className="input_address">
-              <input
-                type="text"
-                className="add_address"
-                placeholder="Add Address"
-                value={address}
-                spellCheck="false"
-                onChange={(e) => {
-                  setAddress(e.target.value);
+        {otp ? (
+          <Drawer
+            anchor="right"
+            open={isDraweropen_login}
+            onClose={() => {
+              setisDraweropen_login(false);
+            }}
+          >
+            <Box role="presentation" p={4} width="500px">
+              <CloseIcon
+                className="close_icon"
+                onClick={() => {
+                  setisDraweropen_login(false);
                 }}
+                style={{ cursor: "pointer" }}
               />
-            </div>
-
-            <div className="div_checkbox_address">
-              <label class="control control-checkbox">
-                <input
-                  type="checkbox"
-                  id="Home"
-                  value="Home"
-                  className="check"
-                  onChange={(e) => {
-                    setCheck(e.target.checked);
-                    setCheck_value(e.target.value);
-                  }}
-                />
-                <span className="check_Box">&nbsp;Home</span>
-                <div class="control_indicator"></div>
-              </label>
-              <label class="control control-checkbox">
-                <input
-                  type="checkbox"
-                  id="Default"
-                  value="Default"
-                  className="check"
-                  onChange={(e) => {
-                    setCheck(e.target.checked);
-                    setCheck_value(e.target.value);
-                  }}
-                />
-                <span className="check_Box">&nbsp;Default</span>
-                <div class="control_indicator"></div>
-              </label>
-              <label class="control control-checkbox">
-                <input
-                  type="checkbox"
-                  id="Office"
-                  value="Office"
-                  className="check"
-                  onChange={(e) => {
-                    setCheck(e.target.checked);
-                    setCheck_value(e.target.value);
-                  }}
-                />
-                <span className="check_Box">&nbsp;Office</span>
-                <div class="control_indicator"></div>
-              </label>
-            </div>
-            <div className="button_save">
-              {" "}
-              <Button
-                className="btn_address"
-                variant="contained"
-                onClick={handleSaveAddress}
-              >
-                Save Address
-              </Button>
-            </div>
-          </Box>
-        </Drawer>
-        {user_verified ? (
-          ""
-        ) : (
-          <div className="address_div">
-            Address <br />
-            {address_add || address_add_status ? (
-              <div className="user_address">
-                <h2>{JSON.parse(localStorage.getItem("Address_Type"))}</h2>
-                <p>{JSON.parse(localStorage.getItem("Address"))}</p>
-                <p style={{ fontWeight: "600" }}> {time.average_time} MINS</p>
+              <div className="login_form">
+                <div className="left_div">
+                  <h2>Enter OTP</h2>
+                </div>
+                <form>
+                  <input
+                    type="number"
+                    name="Number"
+                    placeholder="Enter the OTP"
+                    className="Number_input"
+                    value={otp_valid}
+                    onChange={(e) => {
+                      setOtp_valid(e.target.value);
+                    }}
+                  />
+                  <br />
+                  <input
+                    type="submit"
+                    value="SUBMIT"
+                    className="login_btn"
+                    
+                  />
+                </form>
+                <div className="foot_text">
+                  <p>
+                    By clicking on Login, I accept the terms & Conditions &
+                    Privacy Policy
+                  </p>
+                </div>
               </div>
-            ) : (
-              ""
-            )}
-            <Button
-              id="add_address_user_section"
-              className="btn_address"
-              variant="contained"
-              onClick={() => {
-                setisDraweropen(true);
-              }}
-            >
-              {!address_add && !address_add_status
-                ? "Add New Address"
-                : "Edit Address"}
-            </Button>
-            {address_add_status ? (
-              <Button
-                className="btn_address"
-                id="save_address"
-                variant="contained"
-                onClick={handlePayment}
-              >
-                Save
-              </Button>
-            ) : (
-              ""
-            )}
-          </div>
+            </Box>
+          </Drawer>
+        ) : (
+          ""
         )}
 
-        <div className="payment_div">
-          Payment <br />
-          {payment ? (
-            <div class="wrapper">
-              <div class="checkout_wrapper">
-                <div class="product_info">
-                  <img src={Logo} alt="product" />
-                  <div class="content_info">
-                    <h3>
-                      Enjoy your <br />
-                      &nbsp;&nbsp;Food
-                    </h3>
-                  </div>
-                </div>
-                <div class="checkout_form">
-                  <p>Enter Your Card Details</p>
-                  <div class="details">
-                    <div class="section">
-                      <input
-                        type="text"
-                        id="0"
-                        placeholder="Card Number"
-                        value={inp[0]}
-                        onChange={changeHandler}
-                      />
-                    </div>
-                    <div class="section">
-                      <input
-                        type="text"
-                        id="1"
-                        placeholder="Cardholder Name"
-                        value={inp[1]}
-                        onChange={changeHandler}
-                      />
-                    </div>
-                    <div class="section last_section">
-                      <div class="item">
-                        <input
-                          type="text"
-                          id="2"
-                          placeholder="Expiry Date"
-                          value={inp[2]}
-                          onChange={changeHandler}
-                        />
-                      </div>
-                      <div class="item">
-                        <input
-                          type="text"
-                          id="3"
-                          placeholder="CVV"
-                          value={inp[3]}
-                          onChange={changeHandler}
-                        />
-                      </div>
-                    </div>
-
-                    <div class="btn">
-                      <a onClick={handleClick}>Pay Now</a>
-                    </div>
-                  </div>
-                </div>
-              </div>
+        <div className="main_div_user">
+          {isLogin_user ? (
+            <div className="login_div">
+              Login / Register <br />
+              <Button
+                className="btn_address"
+                variant="contained"
+                onClick={() => {
+                  setLogin(true);
+                  setisDraweropen_login(true);
+                }}
+              >
+                LOGIN / REGISTER
+              </Button>
             </div>
           ) : (
             ""
           )}
+
+          <Drawer
+            anchor="left"
+            open={isDraweropen}
+            onclose={() => {
+              setisDraweropen(false);
+            }}
+          >
+            <Box
+              role="presentation"
+              p={4}
+              width="400px"
+              className="address_box"
+            >
+              <CloseIcon
+                onClick={() => {
+                  setisDraweropen(false);
+                }}
+                style={{
+                  cursor: "pointer",
+                  position: "absolute",
+                  right: "30px",
+                }}
+                className="close_address"
+              />
+              <iframe
+                width="400px"
+                height="400px"
+                src={`https://api.mapbox.com/styles/v1/nifty658/cl2tg7el3002l14pelopffxie.html?title=false&access_token=pk.eyJ1IjoibmlmdHk2NTgiLCJhIjoiY2wydDB2eW8wMDQ2bTNrazQybHdpaGd1MyJ9.Zu_154GZs6sdRHr1Og6V8g&zoomwheel=true#10/${location.latitude}/${location.longitude}`}
+                title="Streets"
+                style={{
+                  border: "none",
+                  marginTop: "50px",
+                  borderRadius: "7px",
+                }}
+              ></iframe>
+
+              <div className="input_address">
+                <input
+                  type="text"
+                  className="add_address"
+                  placeholder="Add Address"
+                  value={address}
+                  spellCheck="false"
+                  onChange={(e) => {
+                    setAddress(e.target.value);
+                  }}
+                />
+              </div>
+
+              <div className="div_checkbox_address">
+                <label class="control control-checkbox">
+                  <input
+                    type="checkbox"
+                    id="Home"
+                    value="Home"
+                    className="check"
+                    onChange={(e) => {
+                      setCheck(e.target.checked);
+                      setCheck_value(e.target.value);
+                    }}
+                  />
+                  <span className="check_Box">&nbsp;Home</span>
+                  <div class="control_indicator"></div>
+                </label>
+                <label class="control control-checkbox">
+                  <input
+                    type="checkbox"
+                    id="Default"
+                    value="Default"
+                    className="check"
+                    onChange={(e) => {
+                      setCheck(e.target.checked);
+                      setCheck_value(e.target.value);
+                    }}
+                  />
+                  <span className="check_Box">&nbsp;Default</span>
+                  <div class="control_indicator"></div>
+                </label>
+                <label class="control control-checkbox">
+                  <input
+                    type="checkbox"
+                    id="Office"
+                    value="Office"
+                    className="check"
+                    onChange={(e) => {
+                      setCheck(e.target.checked);
+                      setCheck_value(e.target.value);
+                    }}
+                  />
+                  <span className="check_Box">&nbsp;Office</span>
+                  <div class="control_indicator"></div>
+                </label>
+              </div>
+              <div className="button_save">
+                {" "}
+                <Button
+                  className="btn_address"
+                  variant="contained"
+                  onClick={handleSaveAddress}
+                >
+                  Save Address
+                </Button>
+              </div>
+            </Box>
+          </Drawer>
+          {user_verified ? (
+            ""
+          ) : (
+            <div className="address_div">
+              Address <br />
+              {address_add || address_add_status ? (
+                <div className="user_address">
+                  <h2>{JSON.parse(localStorage.getItem("Address_Type"))}</h2>
+                  <p>{JSON.parse(localStorage.getItem("Address"))}</p>
+                  <p style={{ fontWeight: "600" }}> {time.average_time} MINS</p>
+                </div>
+              ) : (
+                ""
+              )}
+              <Button
+                id="add_address_user_section"
+                className="btn_address"
+                variant="contained"
+                onClick={() => {
+                  setisDraweropen(true);
+                }}
+              >
+                {!address_add && !address_add_status
+                  ? "Add New Address"
+                  : "Edit Address"}
+              </Button>
+              {address_add_status ? (
+                <Button
+                  className="btn_address"
+                  id="save_address"
+                  variant="contained"
+                  onClick={handlePayment}
+                >
+                  Save
+                </Button>
+              ) : (
+                ""
+              )}
+            </div>
+          )}
+
+          <div className="payment_div">
+            Payment <br />
+            {payment ? (
+              <div class="wrapper">
+                <div class="checkout_wrapper">
+                  <div class="product_info">
+                    <img src={Logo} alt="product" />
+                    <div class="content_info">
+                      <h3>
+                        Enjoy your <br />
+                        &nbsp;&nbsp;Food
+                      </h3>
+                    </div>
+                  </div>
+                  <div class="checkout_form">
+                    <p>Enter Your Card Details</p>
+                    <div class="details">
+                      <div class="section">
+                        <input
+                          type="text"
+                          id="0"
+                          placeholder="Card Number"
+                          value={inp[0]}
+                          onChange={changeHandler}
+                        />
+                      </div>
+                      <div class="section">
+                        <input
+                          type="text"
+                          id="1"
+                          placeholder="Cardholder Name"
+                          value={inp[1]}
+                          onChange={changeHandler}
+                        />
+                      </div>
+                      <div class="section last_section">
+                        <div class="item">
+                          <input
+                            type="text"
+                            id="2"
+                            placeholder="Expiry Date"
+                            value={inp[2]}
+                            onChange={changeHandler}
+                          />
+                        </div>
+                        <div class="item">
+                          <input
+                            type="text"
+                            id="3"
+                            placeholder="CVV"
+                            value={inp[3]}
+                            onChange={changeHandler}
+                          />
+                        </div>
+                      </div>
+
+                      <div class="btn">
+                        <a onClick={handleClick}>Pay Now</a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              ""
+            )}
+          </div>
         </div>
-      </div>
+      </>
     </>
   );
 };
+ 

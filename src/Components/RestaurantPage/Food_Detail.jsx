@@ -11,7 +11,7 @@ import Fade from "@mui/material/Fade";
 import ScrollToTop from "react-scroll-to-top";
 import { useWindowScroll } from "react-use";
 import Typography from "@mui/material/Typography";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { PreLoader } from "../PreLoader";
 const style = {
   position: "absolute",
@@ -24,7 +24,11 @@ const style = {
   boxShadow: 24,
   p: 2,
 };
+
+
 export const Food_Detail = () => {
+
+  
   const [open, setOpen] = useState(false);
   const [data, setData] = useState(null);
   const [showData, setShowData] = useState([]);
@@ -45,6 +49,24 @@ export const Food_Detail = () => {
     return new Promise((resolve) => setTimeout(resolve, ms));
   }
 
+  const { id } = useParams(); // Get the id from URL parameters
+
+  useEffect(() => {
+    // Fetch data from the API using the id
+    fetch(`http://localhost:4000/restaurant/${id}`)
+      .then((response) => response.json())
+      .then((data) => {
+        setData(data);
+        setShowData(data.items);
+      })
+      .catch((error) => {
+        console.error("Error fetching data:", error);
+      });
+  }, [id]);
+
+  console.log(data);
+  console.log("\n \n ", showData);
+
   const handlechange = (e) => {
     setQuery(e.target.value);
     let temp = [];
@@ -58,6 +80,8 @@ export const Food_Detail = () => {
       setShowData(temp);
     }
   };
+
+  console.log(` Data :- ${cart} \n \n \n `);
 
   const { x, y } = useWindowScroll();
   useEffect(() => {
@@ -105,6 +129,7 @@ export const Food_Detail = () => {
     });
     setShowData(veg_only);
   };
+
   const handleClose = () => setOpen(false);
 
   const filterData = (e) => {

@@ -5,17 +5,19 @@ import "./App.css";
 import { Food_Main } from "./Components/RestaurantPage/Food_Main";
 import { Food_Detail } from "./Components/RestaurantPage/Food_Detail";
 import { PaymentDetails } from "./Components/CheckoutPage/PaymentDetails";
-import {ThankYou} from "./Components/Thankyou/Thankyou";
+import ThankYou from './Components/Thankyou/Thankyou'
+
+
 function App() {
   if (!localStorage.getItem("Cart")) {
     localStorage.setItem("Cart", JSON.stringify([]))
   }
-  if (!localStorage.getItem("user_details")) {
-    localStorage.setItem("user_details", JSON.stringify({"name": "", "email": "", "number": ""}))
-  }
-  if (!localStorage.getItem("verificationId")) {
-    localStorage.setItem("verificationId", JSON.stringify({"verificationId":""}))
-  }
+  // if (!localStorage.getItem("user_details")) {
+  //   localStorage.setItem("user_details", JSON.stringify({"name": "", "email": "", "number": ""}))
+  // }
+  // if (!localStorage.getItem("verificationId")) {
+  //   localStorage.setItem("verificationId", JSON.stringify({"verificationId":""}))
+  // }
   return (
     <>
       <Routes>

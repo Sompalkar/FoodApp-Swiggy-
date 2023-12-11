@@ -5,11 +5,12 @@ import Button from "@mui/material/Button";
 import "./PaymentDetails.css";
 import Veg from "../Assets/veg.jpg";
 import NonVegan from "../Assets/NonVeg.jpg";
-import { Navbar } from "../RestaurantPage/Navbar";
+
 import { Address } from "./Address";
 import Coupoun from "../Assets/coupon.jpg";
 import Coupoun_2 from "../Assets/coupon_2.jpg";
 import Coupoun_3 from "../Assets/coupon_3.jpg";
+import { Navbar } from "../RestaurantPage/Navbar";
 export const PaymentDetails = () => {
   const [isDraweropen, setisDraweropen] = useState(false);
   const [couponApplied, isCouponApplied] = useState(false);
