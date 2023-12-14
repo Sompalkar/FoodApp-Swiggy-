@@ -5,7 +5,7 @@
     scrollbar-color: #979197 #ffffff;
   }
 
-  /* Chrome, Edge, and Safari */
+  
   *::-webkit-scrollbar {
     width: 11px;
   }
