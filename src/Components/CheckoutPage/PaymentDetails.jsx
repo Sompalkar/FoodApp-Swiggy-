@@ -188,7 +188,7 @@ export const PaymentDetails = () => {
           </div>
           <div className="total_pay_for_user">
             <p className="amount_tag">TO PAY</p>   
-            <span className="amount_to_paid">
+            <span className="amount_to_paid">  
               {" "}
               &#8377;{" "}
               {couponApplied
