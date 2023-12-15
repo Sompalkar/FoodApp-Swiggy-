@@ -38,7 +38,7 @@ export const PaymentDetails = () => {
     let id=(e.target.parentElement.id)
       let index=-1
       for (let i = 0; i < state.length; i++) {
-        if (state[i].id == id) {
+        if (state[i].id == id) { 
           index=i
         }
       }
