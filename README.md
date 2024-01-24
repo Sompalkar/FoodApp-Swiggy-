@@ -1,5 +1,4 @@
-
-     # Swiggy - (Clone)
+# Swiggy - (Clone)
 
 Swiggy is an Indian online food ordering and delivery platform. Founded in July 2014, Swiggy is based in Bangalore, and operates in 500 Indian cities, as of September 2022. Swiggy’s Highlights for 2023 were full of delicious stories! Mumbai’s biggest foodie ordered a whopping ₹42.3 lakhs, while Chennai, Hyderabad, and Delhi led to count. One Hyderabadi loved Idlis so much they spent ₹6 lakhs on them! And another embraced their biryani passion with 1,633 orders. Swiggy showed us India loves food in all its forms.
 
